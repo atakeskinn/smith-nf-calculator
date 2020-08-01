@@ -1,2 +1,2 @@
 # smith-nf-calculator
-A Smith-Normalform calculator written in Python.
+A Smith-Normalform calculator written in Python, that also outputs and explains all the steps of the algorithm.
