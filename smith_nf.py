@@ -20,9 +20,14 @@ for j in range(m):
 B = np.zeros((n, m))
 
 def read_A():
-    global A, T, S
-    n = int(input("Enter matrix dimension (n):"))
-    m = int(input("Enter matrix dimension (m):"))
+    global A, T, S, n, m
+    while True:
+        try:
+            n = int(input("Enter matrix dimension (n):"))
+            m = int(input("Enter matrix dimension (m):"))
+            break
+        except ValueError:
+            pass
 
     A = np.zeros((n, m))
 
@@ -35,11 +40,18 @@ def read_A():
         for j in range(m):
             if i == 0:
                 T[j][j] = 1
-            A[i][j] = input("Enter entry (" + str(i) + ", " + str(j) + "):")
+            while True:
+                try:
+                    A[i][j] = int(input("Enter entry (" + str(i + 1) + ", " + str(j + 1) + "):"))
+                    break
+                except ValueError:
+                    pass
+                    
+                
     return
 
 def smith_nf(A):
-    global B, n, m, z
+    global T, S, B, n, m, z
     B = A.copy()
     if np.array_equal(B, np.zeros((n, m))):
         return
@@ -49,19 +61,23 @@ def smith_nf(A):
         min_to_first()
         
         divide_and_rest()
-        for i in range(z, n):
-            for j in range(z, m):
-                if not (B[i][j] % B[z][z] == 0):
-                    B[z] += B[i]
-                    S[z] += S[i]
-                    divide_and_rest()
-                    z-=1
-                    break
+        test_divisor_property()
         z += 1
     if check_validity():
         print("Smith-NF was calculated correctly.")
     else:
         print("Smith-NF could not be calculated.")
+
+def test_divisor_property():
+    global T, S, B, n, m, z
+    for i in range(z, n):
+            for j in range(z, m):
+                if not (B[i][j] % B[z][z] == 0):
+                    B[z] += B[i]
+                    S[z] += S[i]
+                    
+                    z-=1
+                    return
 
 def divide_and_rest():
     global S, T, B, m, n, z
@@ -116,15 +132,17 @@ def divide_and_rest():
 def min_to_first():
     global S, T, B, n, m, z
     #find min:
-    mm = abs(B[z][z])
+    mm = None
     i_sel = z
     j_sel = z
     for i in range(z, n):
         for j in range(z, m):
-            if abs(B[i][j]) < mm:
-                i_sel = i
-                j_sel = j
-                mm = abs(B[i][j])
+            if (not abs(B[i][j]) == 0):
+                if (mm == None) or (abs(B[i][j]) <= mm):
+                    i_sel = i
+                    j_sel = j
+                    mm = abs(B[i][j])
+                    
     #swap first row with i-th row:
     B[[z, i_sel]] = B[[i_sel, z]]
     S[[z, i_sel]] = S[[i_sel, z]]
@@ -134,7 +152,7 @@ def min_to_first():
     T[:, [z, j_sel]] = T[:, [j_sel, z]]
     
     if not z == i_sel:
-        print("Swapped rows: " + str(z) + " and " + str(i_sel))
+        print("Swapped rows: " + str(z + 1) + " and " + str(i_sel + 1))
     if not z == j_sel:
         print("Swapped columns: " + str(z + 1) + " and " + str(j_sel + 1))
     if not (z == j_sel and z == i_sel):
