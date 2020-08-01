@@ -6,7 +6,7 @@ m = 3
 
 z = 0
 
-A = np.array([[2, 3, -1], [4, 9, -5]])
+A = np.array([[4, 1, 5], [3, 6, 4]])
 
 T = np.zeros((m, m))
 
@@ -55,6 +55,7 @@ def smith_nf(A):
                     B[z] += B[i]
                     S[z] += S[i]
                     divide_and_rest()
+                    z-=1
                     break
         z += 1
     if check_validity():
@@ -127,14 +128,17 @@ def min_to_first():
     #swap first row with i-th row:
     B[[z, i_sel]] = B[[i_sel, z]]
     S[[z, i_sel]] = S[[i_sel, z]]
-    if not z == i_sel:
-        print("Swapped rows: " + str(z) + " and " + str(i_sel))
+    
     #swap first column with j-th column:
     B[:, [z, j_sel]] = B[:, [j_sel, z]]
     T[:, [z, j_sel]] = T[:, [j_sel, z]]
+    
+    if not z == i_sel:
+        print("Swapped rows: " + str(z) + " and " + str(i_sel))
     if not z == j_sel:
         print("Swapped columns: " + str(z + 1) + " and " + str(j_sel + 1))
-    print_full(B, S, T)
+    if not (z == j_sel and z == i_sel):
+        print_full(B, S, T)
 
     #normalize if < 0
     if B[z][z] < 0:
@@ -167,3 +171,11 @@ def print_full(B, S, T):
 
 #read_A()
 smith_nf(A)
+print("--------------")
+print("B = ")
+print(B.astype(int))
+print("S = ")
+print(S.astype(int))
+print("T = ")
+print(T.astype(int))
+print("S*A*T = B")
