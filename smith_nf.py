@@ -70,65 +70,96 @@ def smith_nf(A):
 
 def test_divisor_property():
     global T, S, B, n, m, z
-    for i in range(z, n):
+    retry = True
+    while retry:
+        retry = False
+        for i in range(z, n):
             for j in range(z, m):
+                if (B[i][j] == B[z][z]):
+                    continue
                 if not (B[i][j] % B[z][z] == 0):
                     B[z] += B[i]
                     S[z] += S[i]
+                    retry = True
                     
-                    z-=1
-                    return
+                    print("Entry at ("
+                          + str(i + 1)
+                          + ", " + str(j + 1)
+                          + ") is not divisible by the invariant factor at ("
+                          + str(z + 1)
+                          + ", " + str(z + 1)
+                          + ")")
+                    print("Added row "
+                      + str(z + 1)
+                      + " to row "
+                      + str(i + 1))
+                    
+                    divide_and_rest()
+    return
+                    
 
 def divide_and_rest():
     global S, T, B, m, n, z
-    for j in range(z + 1, m):
+    
+    j = z + 1    
+    while j < m:
         q = math.floor(B[z][j] / B[z][z])
         B[:, [j]] -= q * B[:, [z]]
         T[:, [j]] -= q * T[:, [z]]
 
-        if q > 0:
-            print("Subtracted column "
-                  + str(z + 1)
-                  + " from column "
-                  + str(j + 1) + " a total of "
-                  + str(q) + " times")
-        else:
-            print("Added column "
-                  + str(z + 1)
-                  + " to column "
-                  + str(j + 1) + " a total of "
-                  + str(-q) + " times")
-            
-        print_full(B, S, T)
+        if q != 0:
+            if q > 0:
+                print("Subtracted column "
+                      + str(z + 1)
+                      + " from column "
+                      + str(j + 1) + " a total of "
+                      + str(q) + " times")
+            else:
+                print("Added column "
+                      + str(z + 1)
+                      + " to column "
+                      + str(j + 1) + " a total of "
+                      + str(-q) + " times")
+              
+            print_full(B, S, T)
+
         
         if not B[z][j] == 0:
-            j = 1
+            j = z
             min_to_first()
 
-    for j in range(z + 1, n):
+        j += 1
+
+        
+    j = z + 1
+    while j < n:
         q = math.floor(B[j][z] / B[z][z])
         B[[j]] -= q * B[[z]]
         S[[j]] -= q * S[[z]]
 
-        if q > 0:
-            print("Subtracted row "
-                  + str(z + 1)
-                  + " from row "
-                  + str(j + 1) + " a total of "
-                  + str(q) + " times")
-        else:
-            print("Added row "
-                  + str(z + 1)
-                  + " to row "
-                  + str(j + 1) + " a total of "
-                  + str(-q) + " times")
-        
-        print_full(B, S, T)
+        if q != 0:
+            if q > 0:
+                print("Subtracted row "
+                      + str(z + 1)
+                      + " from row "
+                      + str(j + 1) + " a total of "
+                      + str(q) + " times")
+            else:
+                print("Added row "
+                      + str(z + 1)
+                      + " to row "
+                      + str(j + 1) + " a total of "
+                      + str(-q) + " times")
+            
+            print_full(B, S, T)
         
         if not B[j][z] == 0:
-            j = 1
+            j = z
             min_to_first()
-        
+            
+        j += 1
+                
+                
 def min_to_first():
     global S, T, B, n, m, z
     #find min:
